@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAG System Query Flow Diagram</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            padding: 30px;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-top: 0;
+        }
+        .diagram-section {
+            margin: 30px 0;
+        }
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+        .description {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.6;
+            margin: 15px 0;
+        }
+        .legend {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 30px;
+            padding: 20px;
+            background: #f5f5f5;
+            border-radius: 5px;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .legend-color {
+            width: 30px;
+            height: 30px;
+            border-radius: 4px;
+        }
+        .frontend { background: #FFE5B4; }
+        .backend { background: #B4E5FF; }
+        .ai { background: #E5B4FF; }
+        .vector { background: #B4FFB4; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔄 RAG System Query Flow Diagram</h1>
+
+        <div class="diagram-section">
+            <h2>Complete Query Processing Pipeline</h2>
+            <div class="mermaid">
+                graph TD
+                    A["👤 User Types Query<br/>What is MCP?"]
+                    B["📤 Frontend: script.js<br/>sendMessage()"]
+                    C["🔗 POST /api/query<br/>{query, session_id}"]
+                    D["⚙️ FastAPI: app.py<br/>query_documents()"]
+                    E["🤖 RAG System<br/>rag_system.query()"]
+                    F["📝 Session Manager<br/>Get conversation history"]
+                    G["🧠 AI Generator<br/>generate_response()"]
+                    H["🔌 Claude API<br/>with tool definitions"]
+                    I{"Claude decides<br/>to use tool?"}
+                    J["🔧 Tool Execution<br/>search_course_content"]
+                    K["🔍 Vector Store<br/>vector_store.search()"]
+                    L["🗄️ ChromaDB<br/>Semantic Search"]
+                    M["📚 Retrieved Content<br/>Top 5 results + metadata"]
+                    N["📋 Format Results<br/>with course/lesson context"]
+                    O["📤 Tool Results to Claude<br/>Formatted search results"]
+                    P["✍️ Claude Generates<br/>Final Answer"]
+                    Q["📦 Response Object<br/>{answer, sources, session_id}"]
+                    R["💾 Update Session<br/>Add to conversation history"]
+                    S["↩️ Return to Frontend<br/>JSON Response"]
+                    T["🎨 Update UI<br/>Display answer + sources"]
+                    U["✅ Show Result<br/>with collapsible sources"]
+
+                    A --> B
+                    B --> C
+                    C --> D
+                    D --> E
+                    E --> F
+                    F --> G
+                    G --> H
+                    H --> I
+                    I -->|Yes| J
+                    I -->|No| P
+                    J --> K
+                    K --> L
+                    L --> M
+                    M --> N
+                    N --> O
+                    O --> P
+                    P --> Q
+                    Q --> R
+                    R --> S
+                    S --> T
+                    T --> U
+
+                    style A fill:#FFE5B4
+                    style B fill:#FFE5B4
+                    style C fill:#FFE5B4
+                    style D fill:#B4E5FF
+                    style E fill:#B4E5FF
+                    style F fill:#B4E5FF
+                    style G fill:#E5B4FF
+                    style H fill:#E5B4FF
+                    style I fill:#E5B4FF
+                    style J fill:#B4E5FF
+                    style K fill:#B4FFB4
+                    style L fill:#B4FFB4
+                    style M fill:#B4FFB4
+                    style N fill:#B4FFB4
+                    style O fill:#E5B4FF
+                    style P fill:#E5B4FF
+                    style Q fill:#B4E5FF
+                    style R fill:#B4E5FF
+                    style S fill:#FFE5B4
+                    style T fill:#FFE5B4
+                    style U fill:#FFE5B4
+            </div>
+            <p class="description">
+                This diagram shows the complete flow of a user query through the entire RAG system, from initial user input through to final response display.
+            </p>
+        </div>
+
+        <div class="diagram-section">
+            <h2>Detailed Component Interaction</h2>
+            <div class="mermaid">
+                graph LR
+                    subgraph Frontend["🌐 Frontend Layer"]
+                        UI["HTML/CSS/JS<br/>Chat Interface"]
+                        JS["script.js<br/>Event Handlers"]
+                    end
+
+                    subgraph Network["🔌 HTTP Layer"]
+                        REST["FastAPI REST API<br/>Port 8000"]
+                    end
+
+                    subgraph Backend["⚙️ Backend Layer"]
+                        APP["app.py<br/>FastAPI App"]
+                        RAG["rag_system.py<br/>RAG Orchestrator"]
+                    end
+
+                    subgraph Processing["🧠 AI Processing"]
+                        AI["ai_generator.py<br/>Claude Integration"]
+                        CLAUDE["Claude API<br/>Anthropic"]
+                    end
+
+                    subgraph Tools["🔧 Tool System"]
+                        TM["search_tools.py<br/>Tool Manager"]
+                        SEARCH["CourseSearchTool<br/>Search Executor"]
+                    end
+
+                    subgraph Storage["🗄️ Data Layer"]
+                        VS["vector_store.py<br/>ChromaDB Wrapper"]
+                        CHROMA["ChromaDB<br/>Vector Database"]
+                        DOCS["course_content.txt<br/>Doc Collection"]
+                    end
+
+                    subgraph Context["📝 Context Management"]
+                        SM["session_manager.py<br/>Session Handler"]
+                        HISTORY["Conversation<br/>History"]
+                    end
+
+                    UI -->|Click Send| JS
+                    JS -->|POST /api/query| REST
+                    REST -->|QueryRequest| APP
+                    APP --> SM
+                    SM --> HISTORY
+                    APP --> RAG
+                    RAG --> AI
+                    RAG --> SM
+                    AI --> CLAUDE
+                    CLAUDE -->|Tool Definitions| AI
+                    AI -->|Tool Use Request| TM
+                    TM --> SEARCH
+                    SEARCH --> VS
+                    VS --> CHROMA
+                    CHROMA --> DOCS
+                    DOCS -->|Semantic Match| CHROMA
+                    CHROMA -->|Top 5 Results| VS
+                    VS -->|Formatted Results| SEARCH
+                    SEARCH -->|Search Results| TM
+                    TM -->|Tool Results| AI
+                    AI -->|Final Answer| RAG
+                    RAG --> APP
+                    APP -->|JSON Response| REST
+                    REST -->|QueryResponse| JS
+                    JS -->|Update DOM| UI
+
+                    style Frontend fill:#FFE5B4
+                    style Network fill:#FFD9B3
+                    style Backend fill:#B4E5FF
+                    style Processing fill:#E5B4FF
+                    style Tools fill:#E5D9FF
+                    style Storage fill:#B4FFB4
+                    style Context fill:#FFE5E5
+            </div>
+            <p class="description">
+                This diagram shows how different components interact with each other across the Frontend, Network, Backend, AI Processing, Tools, Storage, and Context layers.
+            </p>
+        </div>
+
+        <div class="diagram-section">
+            <h2>Vector Search Process (Detailed)</h2>
+            <div class="mermaid">
+                graph TD
+                    A["User Query:<br/>What is MCP?"]
+                    B["AI Generator<br/>decides to search"]
+                    C["Tool Manager<br/>execute_tool()"]
+                    D["CourseSearchTool<br/>execute()"]
+                    E["VectorStore<br/>search()"]
+                    F{"Course name<br/>provided?"}
+                    G["Resolve course name<br/>via semantic search"]
+                    H["Build filter<br/>course_title & lesson"]
+                    I["ChromaDB query<br/>with embeddings"]
+                    J["SentenceTransformer<br/>Encode query"]
+                    K["Semantic similarity<br/>matching"]
+                    L["Return Top N<br/>with metadata"]
+                    M["Format results<br/>with context"]
+                    N["Store sources<br/>for UI display"]
+                    O["Return formatted<br/>search results"]
+
+                    A --> B
+                    B --> C
+                    C --> D
+                    D --> E
+                    E --> F
+                    F -->|Yes| G
+                    F -->|No| H
+                    G --> H
+                    H --> I
+                    I --> J
+                    J --> K
+                    K --> L
+                    L --> M
+                    M --> N
+                    N --> O
+
+                    style A fill:#FFE5B4
+                    style B fill:#E5B4FF
+                    style C fill:#B4E5FF
+                    style D fill:#B4E5FF
+                    style E fill:#B4E5FF
+                    style F fill:#B4E5FF
+                    style G fill:#B4FFB4
+                    style H fill:#B4FFB4
+                    style I fill:#B4FFB4
+                    style J fill:#B4FFB4
+                    style K fill:#B4FFB4
+                    style L fill:#B4FFB4
+                    style M fill:#B4FFB4
+                    style N fill:#B4FFB4
+                    style O fill:#B4E5FF
+            </div>
+            <p class="description">
+                This diagram details how the vector search process works internally, from query parsing through semantic matching in ChromaDB to formatted result generation.
+            </p>
+        </div>
+
+        <div class="legend">
+            <h3 style="grid-column: 1/-1; margin-top: 0;">Color Legend</h3>
+            <div class="legend-item">
+                <div class="legend-color frontend"></div>
+                <span><strong>Frontend:</strong> User interface and JavaScript</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color backend"></div>
+                <span><strong>Backend:</strong> FastAPI, RAG System, Tools</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color ai"></div>
+                <span><strong>AI Layer:</strong> Claude API integration</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color vector"></div>
+                <span><strong>Vector/Storage:</strong> ChromaDB and embeddings</span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
