@@ -40,10 +40,15 @@ class QueryRequest(BaseModel):
     query: str
     session_id: Optional[str] = None
 
+class SourceCitation(BaseModel):
+    """Model for a single source citation with optional video link"""
+    text: str  # Display text (e.g., "MCP Course - Lesson 1")
+    url: Optional[str] = None  # Lesson video link
+
 class QueryResponse(BaseModel):
     """Response model for course queries"""
     answer: str
-    sources: List[str]
+    sources: List[SourceCitation]
     session_id: str
 
 class CourseStats(BaseModel):
@@ -61,13 +66,19 @@ async def query_documents(request: QueryRequest):
         session_id = request.session_id
         if not session_id:
             session_id = rag_system.session_manager.create_session()
-        
+
         # Process query using RAG system
         answer, sources = rag_system.query(request.query, session_id)
-        
+
+        # Convert sources (list of dicts) to SourceCitation objects
+        source_citations = [
+            SourceCitation(text=s['text'], url=s.get('url'))
+            for s in sources
+        ]
+
         return QueryResponse(
             answer=answer,
-            sources=sources,
+            sources=source_citations,
             session_id=session_id
         )
     except Exception as e:

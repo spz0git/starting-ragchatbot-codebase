@@ -245,6 +245,30 @@ header h1 {
     color: var(--text-secondary);
 }
 
+/* Clickable source link styling */
+.source-link {
+    color: #667eea;
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: all 0.2s ease;
+}
+
+.source-link:hover {
+    color: #5568d3;
+    border-bottom-color: #667eea;
+}
+
+.source-link:visited {
+    color: #667eea;
+}
+
+/* Add external link indicator */
+.source-link::after {
+    content: " ↗";
+    font-size: 0.8em;
+    opacity: 0.6;
+}
+
 /* Markdown formatting styles */
 .message-content h1,
 .message-content h2,
