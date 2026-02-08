@@ -5,7 +5,11 @@ const API_URL = '/api';
 let currentSessionId = null;
 
 // DOM elements
-let chatMessages, chatInput, sendButton, totalCourses, courseTitles, newChatBtn;
+let chatMessages, chatInput, sendButton, totalCourses, courseTitles, newChatBtn, themeToggle;
+
+// Theme constants
+const THEME_KEY = 'theme-preference';
+const LIGHT_MODE_CLASS = 'light-mode';
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
@@ -16,7 +20,9 @@ document.addEventListener('DOMContentLoaded', () => {
     totalCourses = document.getElementById('totalCourses');
     courseTitles = document.getElementById('courseTitles');
     newChatBtn = document.getElementById('newChatBtn');
-    
+    themeToggle = document.getElementById('themeToggle');
+
+    initializeTheme();
     setupEventListeners();
     createNewSession();
     loadCourseStats();
@@ -29,12 +35,23 @@ function setupEventListeners() {
     chatInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') sendMessage();
     });
-    
+
     // New Chat functionality
     if (newChatBtn) {
         newChatBtn.addEventListener('click', resetSession);
     }
-    
+
+    // Theme toggle functionality
+    if (themeToggle) {
+        themeToggle.addEventListener('click', toggleTheme);
+        themeToggle.addEventListener('keypress', (e) => {
+            if (e.key === ' ' || e.key === 'Enter') {
+                e.preventDefault();
+                toggleTheme();
+            }
+        });
+    }
+
     // Suggested questions
     document.querySelectorAll('.suggested-item').forEach(button => {
         button.addEventListener('click', (e) => {
@@ -43,6 +60,47 @@ function setupEventListeners() {
             sendMessage();
         });
     });
+}
+
+// Theme Functions
+function initializeTheme() {
+    const savedTheme = localStorage.getItem(THEME_KEY);
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+    // Use saved preference, or default to dark if system prefers dark, otherwise light
+    const shouldBeLightMode = savedTheme === 'light' || (savedTheme !== 'dark' && !prefersDark);
+
+    if (shouldBeLightMode) {
+        enableLightMode();
+    } else {
+        enableDarkMode();
+    }
+}
+
+function toggleTheme() {
+    const isLightMode = document.documentElement.classList.contains(LIGHT_MODE_CLASS);
+
+    if (isLightMode) {
+        enableDarkMode();
+    } else {
+        enableLightMode();
+    }
+}
+
+function enableDarkMode() {
+    document.documentElement.classList.remove(LIGHT_MODE_CLASS);
+    if (themeToggle) {
+        themeToggle.classList.remove(LIGHT_MODE_CLASS);
+    }
+    localStorage.setItem(THEME_KEY, 'dark');
+}
+
+function enableLightMode() {
+    document.documentElement.classList.add(LIGHT_MODE_CLASS);
+    if (themeToggle) {
+        themeToggle.classList.add(LIGHT_MODE_CLASS);
+    }
+    localStorage.setItem(THEME_KEY, 'light');
 }
 
 

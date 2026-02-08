@@ -51,6 +51,76 @@ header {
     display: none;
 }
 
+/* Theme Toggle Button */
+.theme-toggle {
+    position: fixed;
+    top: 1.5rem;
+    right: 1.5rem;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: var(--surface);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1000;
+    padding: 0;
+    font-size: 0;
+}
+
+.theme-toggle:hover {
+    background: var(--surface-hover);
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+}
+
+.theme-toggle:active {
+    transform: translateY(0);
+}
+
+.theme-toggle:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--focus-ring), 0 4px 12px rgba(37, 99, 235, 0.2);
+}
+
+.theme-toggle:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.theme-icon {
+    position: absolute;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: block;
+}
+
+.sun-icon {
+    opacity: 1;
+    transform: rotate(0deg) scale(1);
+}
+
+.moon-icon {
+    opacity: 0;
+    transform: rotate(-180deg) scale(0.8);
+}
+
+/* Light mode class for toggle state */
+.theme-toggle.light-mode .sun-icon {
+    opacity: 0;
+    transform: rotate(180deg) scale(0.8);
+}
+
+.theme-toggle.light-mode .moon-icon {
+    opacity: 1;
+    transform: rotate(0deg) scale(1);
+}
+
 header h1 {
     font-size: 1.75rem;
     font-weight: 700;
@@ -786,4 +856,33 @@ details[open] .suggested-header::before {
     .sidebar {
         width: 280px;
     }
+}
+
+/* Light Mode Theme */
+html.light-mode {
+    --primary-color: #1d4ed8;
+    --primary-hover: #1e40af;
+    --background: #f8fafc;
+    --surface: #e2e8f0;
+    --surface-hover: #cbd5e1;
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+    --border-color: #cbd5e1;
+    --user-message: #1d4ed8;
+    --assistant-message: #e2e8f0;
+    --focus-ring: rgba(29, 78, 216, 0.2);
+    --welcome-bg: #dbeafe;
+    --welcome-border: #1d4ed8;
+}
+
+html.light-mode .theme-toggle {
+    background: var(--surface);
+    border-color: var(--border-color);
+    color: var(--text-secondary);
+}
+
+html.light-mode .theme-toggle:hover {
+    background: var(--surface-hover);
+    color: var(--primary-color);
+    border-color: var(--primary-color);
 }
