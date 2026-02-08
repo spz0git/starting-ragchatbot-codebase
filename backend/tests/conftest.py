@@ -12,6 +12,8 @@ from config import Config
 from vector_store import VectorStore
 from document_processor import DocumentProcessor
 from models import Course, Lesson, CourseChunk
+from fastapi.testclient import TestClient
+from app import app, RAGSystem
 
 
 @pytest.fixture
@@ -113,3 +115,25 @@ def temp_document_file(sample_document_text):
         os.unlink(f.name)
     except:
         pass
+
+
+@pytest.fixture
+def test_client(test_config):
+    """Create a FastAPI test client with test configuration"""
+    # Override app's RAG system with test config
+    from unittest.mock import patch
+    with patch('app.rag_system', RAGSystem(test_config)):
+        client = TestClient(app)
+        yield client
+
+
+@pytest.fixture
+def test_client_with_docs(test_config, temp_document_file):
+    """Create a FastAPI test client with sample documents loaded"""
+    rag = RAGSystem(test_config)
+    rag.add_course_document(temp_document_file)
+
+    from unittest.mock import patch
+    with patch('app.rag_system', rag):
+        client = TestClient(app)
+        yield client
