@@ -40,6 +40,10 @@ class QueryRequest(BaseModel):
     query: str
     session_id: Optional[str] = None
 
+class ResetSessionRequest(BaseModel):
+    """Request model for resetting a session"""
+    session_id: str
+
 class SourceCitation(BaseModel):
     """Model for a single source citation with optional video link"""
     text: str  # Display text (e.g., "MCP Course - Lesson 1")
@@ -81,6 +85,15 @@ async def query_documents(request: QueryRequest):
             sources=source_citations,
             session_id=session_id
         )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/reset")
+async def reset_session(request: ResetSessionRequest):
+    """Reset a conversation session"""
+    try:
+        rag_system.session_manager.clear_session(request.session_id)
+        return {"status": "success", "message": "Session reset"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -127,4 +140,4 @@ class DevStaticFiles(StaticFiles):
     
     
 # Serve static files for the frontend
-app.mount("/", StaticFiles(directory="../frontend", html=True), name="static")
+app.mount("/", DevStaticFiles(directory="../frontend", html=True), name="static")
